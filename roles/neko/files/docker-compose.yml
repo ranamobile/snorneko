@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  neko:
+    image: nurdism/neko:latest
+    restart: always
+    shm_size: "1gb"
+    ports:
+      - "8080:8080"
+      - "59000-59100:59000-59100/udp"
+    environment:
+      DISPLAY: :99.0
+      NEKO_PASSWORD: hongzaiawesome
+      NEKO_PASSWORD_ADMIN: admin
+      NEKO_BIND: :8080
+      NEKO_EPR: 59000-59100
+      NEKO_IP: 54.82.150.231
+
+  nginx:
+    image: nginx:1.15-alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot

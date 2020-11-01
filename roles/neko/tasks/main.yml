@@ -1,0 +1,35 @@
+---
+- name: Create neko project directory
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /opt/neko
+    - /opt/neko/data
+    - /opt/neko/data/nginx
+
+- name: Add docker-compose.yml to project
+  copy:
+    src: docker-compose.yml
+    dest: /opt/neko/docker-compose.yml
+
+- name: Add nginx config to project
+  copy:
+    src: app.conf
+    dest: /opt/neko/data/nginx/app.conf
+
+- name: Add letsencrypt initialization script
+  copy:
+    src: init-letsencrypt.sh
+    dest: /opt/neko/init-letsencrypt.sh
+    mode: '0774'
+
+- name: Run letsencrypt initialization
+  shell:
+    chdir: /opt/neko
+    cmd: ./init-letsencrypt.sh neko.hongzai.io
+
+- name: Start up docker-compose
+  community.general.docker_compose:
+    project_src: /opt/neko
+    state: present
