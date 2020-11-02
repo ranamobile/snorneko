@@ -1,0 +1,20 @@
+---
+- name: Delete EC2 instance
+  community.aws.ec2_instance:
+    state: absent
+    filters:
+      tag-key: neko
+  register: neko_instance
+
+- name: Save public IP of EC2 instance
+  set_fact:
+    neko_ip: "{{ neko_instance.instances[0].public_ip_address }}"
+
+- name: Remove DNS record from Route53
+  community.aws.route53:
+    state: absent
+    zone: hongzai.io
+    record: neko.hongzai.io
+    type: A
+    value:
+      - "{{ neko_ip }}"

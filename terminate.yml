@@ -1,0 +1,5 @@
+---
+- name: Unconfigure AWS
+  hosts: localhost
+  roles:
+    - clean
