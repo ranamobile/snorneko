@@ -1,0 +1,31 @@
+---
+- name: Start an instance with a public IP address
+  community.aws.ec2_instance:
+    name: neko
+    key_name: ariana-alienware
+    vpc_subnet_id: subnet-74cf5c11
+    instance_type: t3a.medium
+    security_group: WebsiteDev
+    network:
+      assign_public_ip: true
+    image_id: ami-0dba2cb6798deb6d8
+    tags:
+      neko: true
+    state: running
+  register: neko_instance
+
+- name: Save public IP of EC2 instance
+  set_fact:
+    neko_ip: "{{ neko_instance.instances[0].public_ip_address }}"
+
+- name: Update the DNS record to point to EC2 instance
+  community.aws.route53:
+    state: present
+    zone: hongzai.io
+    record: neko.hongzai.io
+    type: A
+    ttl: 300
+    value:
+      - "{{ neko_ip }}"
+    overwrite: yes
+    wait: yes

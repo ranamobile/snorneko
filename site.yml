@@ -1,6 +1,11 @@
 ---
+- name: Configure AWS
+  hosts: localhost
+  roles:
+    - instance
+
 - name: Deploy neko server
-  hosts: all
+  hosts: neko
   remote_user: ubuntu
   become: yes
   become_method: sudo

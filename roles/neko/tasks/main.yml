@@ -9,8 +9,8 @@
     - /opt/neko/data/nginx
 
 - name: Add docker-compose.yml to project
-  copy:
-    src: docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
     dest: /opt/neko/docker-compose.yml
 
 - name: Add nginx config to project
@@ -24,12 +24,12 @@
     dest: /opt/neko/init-letsencrypt.sh
     mode: '0774'
 
-- name: Run letsencrypt initialization
-  shell:
-    chdir: /opt/neko
-    cmd: ./init-letsencrypt.sh neko.hongzai.io
-
 - name: Start up docker-compose
   community.general.docker_compose:
     project_src: /opt/neko
     state: present
+
+- name: Run letsencrypt initialization
+  shell:
+    chdir: /opt/neko
+    cmd: ./init-letsencrypt.sh neko.hongzai.io

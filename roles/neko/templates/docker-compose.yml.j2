@@ -13,7 +13,9 @@ services:
       NEKO_PASSWORD_ADMIN: admin
       NEKO_BIND: :8080
       NEKO_EPR: 59000-59100
-      NEKO_IP: 54.82.150.231
+      NEKO_IP: {{ hostvars['localhost']['neko_ip'] }}
+      NEKO_ICELITE: 1
+      NEKO_ICESERVER: stun2.l.google.com:19305
 
   nginx:
     image: nginx:1.15-alpine
