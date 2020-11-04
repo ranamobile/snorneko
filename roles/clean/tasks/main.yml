@@ -4,17 +4,27 @@
     state: absent
     filters:
       tag-key: neko
-  register: neko_instance
+
+- name: Get DNS record from Route53
+  community.aws.route53_info:
+    type: A
+    query: record_sets
+    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    start_record_name: "{{ neko_domain_name }}"
+  register: neko_record
 
 - name: Save public IP of EC2 instance
   set_fact:
-    neko_ip: "{{ neko_instance.instances[0].public_ip_address }}"
+    neko_ip: "{{ neko_record.list[0].ResourceRecords[0].Value }}"
+    neko_ttl: "{{ neko_record.list[0].TTL }}"
+    neko_type: "{{ neko_record.list[0].Type }}"
 
 - name: Remove DNS record from Route53
   community.aws.route53:
     state: absent
-    zone: hongzai.io
-    record: neko.hongzai.io
-    type: A
+    zone: "{{ main_domain_name }}"
+    record: "{{ neko_domain_name }}"
+    type: "{{ neko_type }}"
+    ttl: "{{ neko_ttl }}"
     value:
       - "{{ neko_ip }}"

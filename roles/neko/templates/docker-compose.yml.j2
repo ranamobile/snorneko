@@ -1,9 +1,9 @@
 version: "3.7"
 services:
   neko:
-    image: nurdism/neko:latest
+    image: m1k1o/neko:latest
     restart: always
-    shm_size: "1gb"
+    shm_size: "8gb"
     ports:
       - "8080:8080"
       - "59000-59100:59000-59100/udp"

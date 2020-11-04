@@ -14,14 +14,13 @@
     dest: /opt/neko/docker-compose.yml
 
 - name: Add nginx config to project
-  copy:
-    src: app.conf
+  template:
+    src: app.conf.j2
     dest: /opt/neko/data/nginx/app.conf
-    - name: Get stats of the FS object
 
 - name: Check letsencrypt cert status
   stat:
-    path: /opt/neko/data/certbot/conf/neko.hongzai.io/fullchain.pem
+    path: "/opt/neko/data/certbot/conf/{{ neko_domain_name }}/fullchain.pem"
   register: cert
 
 - name: Add letsencrypt initialization script
@@ -39,4 +38,4 @@
 - name: Run letsencrypt initialization
   shell:
     chdir: /opt/neko
-    cmd: ./init-letsencrypt.sh neko.hongzai.io
+    cmd: ./init-letsencrypt.sh {{ neko_domain_name }}
