@@ -1,7 +1,25 @@
 ---
-- name: Delete EC2 instance
+- name: Stop up EC2 instance and get info
   community.aws.ec2_instance:
+    state: stopped
+    region: "{{ ec2_region }}"
+    filters:
+      tag-key: neko
+  register: neko_instance
+
+- name: Create elastic IP for the EC2 instance
+  community.aws.ec2_eip:
+    device_id: "{{ neko_instance.instances[0].instance_id }}"
+    release_on_disassociation: yes
+    region: "{{ ec2_region }}"
     state: absent
+    tag_name: neko
+  register: neko_eip
+
+- name: Clean up EC2 instance
+  community.aws.ec2_instance:
+    state: "{{ ec2_instance_state }}"
+    region: "{{ ec2_region }}"
     filters:
       tag-key: neko
 
@@ -18,6 +36,7 @@
     neko_ip: "{{ neko_record.list[0].ResourceRecords[0].Value }}"
     neko_ttl: "{{ neko_record.list[0].TTL }}"
     neko_type: "{{ neko_record.list[0].Type }}"
+  when: neko_record.list | d(False)
 
 - name: Remove DNS record from Route53
   community.aws.route53:
@@ -28,3 +47,4 @@
     ttl: "{{ neko_ttl }}"
     value:
       - "{{ neko_ip }}"
+  when: neko_record.list | d(False)

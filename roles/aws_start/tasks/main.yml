@@ -1,4 +1,9 @@
 ---
+- name: Find an Ubuntu 20.04 Server image
+  amazon.aws.ec2_ami_info:
+    filters:
+      name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-*"
+
 - name: Start an instance with a public IP address
   community.aws.ec2_instance:
     name: neko
@@ -15,9 +20,20 @@
     state: running
   register: neko_instance
 
-- name: Save public IP of EC2 instance
+- name: Create elastic IP for the EC2 instance
+  community.aws.ec2_eip:
+    allow_reassociation: yes
+    device_id: "{{ neko_instance.instances[0].instance_id }}"
+    release_on_disassociation: yes
+    reuse_existing_ip_allowed: yes
+    region: "{{ ec2_region }}"
+    in_vpc: yes
+    tag_name: neko
+  register: neko_eip
+
+- name: Save public IP address
   set_fact:
-    neko_ip: "{{ neko_instance.instances[0].public_ip_address }}"
+    neko_ip: "{{ neko_eip.public_ip }}"
 
 - name: Update the DNS record to point to EC2 instance
   community.aws.route53:

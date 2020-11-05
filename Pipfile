@@ -7,8 +7,6 @@ verify_ssl = true
 
 [packages]
 ansible = "*"
-boto3 = "*"
-boto = "*"
 
 [requires]
 python_version = "3.8"

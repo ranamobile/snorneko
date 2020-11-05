@@ -2,7 +2,7 @@
 - name: Configure AWS
   hosts: localhost
   roles:
-    - instance
+    - aws_start
 
 - name: Deploy neko server
   hosts: neko

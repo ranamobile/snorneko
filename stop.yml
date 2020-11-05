@@ -2,4 +2,4 @@
 - name: Unconfigure AWS
   hosts: localhost
   roles:
-    - clean
+    - aws_stop
