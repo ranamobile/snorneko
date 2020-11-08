@@ -1,0 +1,48 @@
+---
+- name: Find an Ubuntu 20.04 Server image
+  amazon.aws.ec2_ami_info:
+    filters:
+      name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
+      architecture: x86_64
+      is-public: true
+      root-device-type: ebs
+  register: neko_image
+
+- name: Upsert security group
+  amazon.aws.ec2_group:
+    name: NekoSecurityGroup
+    description: security group for neko application
+    tags:
+      neko: yes
+    rules:
+      - cidr_ip: 0.0.0.0/0
+        proto: tcp
+        ports:
+          - 80
+          - 443
+      - cidr_ip: 0.0.0.0/0
+        proto: tcp
+        ports:
+          - 59000-59100
+
+- name: Get VPC info
+  amazon.aws.ec2_vpc_net:
+    name: NekoNet
+    cidr_block: "{{ ec2_vpc_cidr }}"
+    tags:
+      neko: yes
+  register: neko_net
+
+- name: Get VPC Subnet info
+  amazon.aws.ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ neko_net.vpc.id }}"
+    cidr: "{{ ec2_vpc_subnet_cidr }}"
+    tags:
+      neko: yes
+  register: neko_subnet
+
+- name: Get Route53 info
+  community.aws.route53_zone:
+    zone: "{{ main_domain_name }}"
+  register: hongzai_domain

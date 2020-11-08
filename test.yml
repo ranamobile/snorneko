@@ -1,0 +1,5 @@
+---
+- name: Test AWS
+  hosts: localhost
+  roles:
+    - aws_test
