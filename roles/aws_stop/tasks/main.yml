@@ -7,7 +7,7 @@
       tag-key: neko
   register: neko_instance
 
-- name: Create elastic IP for the EC2 instance
+- name: Remove elastic IP for the EC2 instance
   community.aws.ec2_eip:
     device_id: "{{ neko_instance.instances[0].instance_id }}"
     release_on_disassociation: yes
@@ -23,11 +23,16 @@
     filters:
       tag-key: neko
 
+- name: Get Route53 info
+  community.aws.route53_zone:
+    zone: "{{ main_domain_name }}"
+  register: hongzai_domain
+
 - name: Get DNS record from Route53
   community.aws.route53_info:
     type: A
     query: record_sets
-    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    hosted_zone_id: "{{ hongzai_domain.zone_id }}"
     start_record_name: "{{ neko_domain_name }}"
   register: neko_record
 

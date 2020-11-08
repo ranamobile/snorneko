@@ -21,7 +21,7 @@ clean:  ## Remove untracked files except for .env file
 	git clean -fxd --exclude .env
 
 start:  ## Deploy instance to AWS
-	pipenv run ansible-playbook -i hosts start.yml -vvv
+	pipenv run ansible-playbook -i hosts start.yml
 
 stop:  ## Deploy instance to AWS
 	pipenv run ansible-playbook -i hosts --extra-vars "ec2_instance_state=stopped" stop.yml

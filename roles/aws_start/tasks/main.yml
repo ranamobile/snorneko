@@ -3,6 +3,28 @@
   amazon.aws.ec2_ami_info:
     filters:
       name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-*"
+      architecture: x86_64
+      is-public: true
+      root-device-type: ebs
+  register: neko_image
+
+- name: Upsert security group
+  amazon.aws.ec2_group:
+    name: "{{ ec2_security_group }}"
+    description: security group for neko application
+    tags:
+      neko: yes
+    rules:
+      - cidr_ip: 0.0.0.0/0
+        proto: tcp
+        ports:
+          - 22
+          - 80
+          - 443
+      - cidr_ip: 0.0.0.0/0
+        proto: udp
+        ports:
+          - 59000-59100
 
 - name: Start an instance with a public IP address
   community.aws.ec2_instance:
@@ -11,7 +33,7 @@
     vpc_subnet_id: "{{ ec2_vpc_subnet_id }}"
     instance_type: "{{ ec2_instance_type }}"
     security_group: "{{ ec2_security_group }}"
-    image_id: "{{ ec2_image_id }}"
+    image_id: "{{ neko_image.images[-1].image_id }}"
     region: "{{ ec2_region }}"
     network:
       assign_public_ip: true
@@ -20,20 +42,24 @@
     state: running
   register: neko_instance
 
-- name: Create elastic IP for the EC2 instance
-  community.aws.ec2_eip:
-    allow_reassociation: yes
-    device_id: "{{ neko_instance.instances[0].instance_id }}"
-    release_on_disassociation: yes
-    reuse_existing_ip_allowed: yes
-    region: "{{ ec2_region }}"
-    in_vpc: yes
-    tag_name: neko
-  register: neko_eip
-
 - name: Save public IP address
   set_fact:
-    neko_ip: "{{ neko_eip.public_ip }}"
+    neko_ip: "{{ neko_instance.instances[0].public_ip_address }}"
+
+# - name: Create elastic IP for the EC2 instance
+#   community.aws.ec2_eip:
+#     allow_reassociation: yes
+#     device_id: "{{ neko_instance.instances[0].instance_id }}"
+#     release_on_disassociation: yes
+#     reuse_existing_ip_allowed: yes
+#     region: "{{ ec2_region }}"
+#     in_vpc: yes
+#     tag_name: neko
+#   register: neko_eip
+
+# - name: Save public IP address
+#   set_fact:
+#     neko_ip: "{{ neko_eip.public_ip }}"
 
 - name: Update the DNS record to point to EC2 instance
   community.aws.route53:

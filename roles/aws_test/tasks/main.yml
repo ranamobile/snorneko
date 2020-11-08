@@ -10,7 +10,7 @@
 
 - name: Upsert security group
   amazon.aws.ec2_group:
-    name: NekoSecurityGroup
+    name: "{{ ec2_security_group }}"
     description: security group for neko application
     tags:
       neko: yes
@@ -18,10 +18,11 @@
       - cidr_ip: 0.0.0.0/0
         proto: tcp
         ports:
+          - 22
           - 80
           - 443
       - cidr_ip: 0.0.0.0/0
-        proto: tcp
+        proto: udp
         ports:
           - 59000-59100
 
