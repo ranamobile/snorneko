@@ -1,15 +1,8 @@
 ---
 main_domain_name: hongzai.io
-neko_domain_name: neko1.hongzai.io
+neko_domain_name: neko2.hongzai.io
 
-ec2_key_name: ariana-alienware
-ec2_region: us-east-1
-ec2_vpc_subnet_id: subnet-74cf5c11
+ec2_region: us-east-2
 ec2_instance_type: t3a.large
+ec2_key_name: ariana-alienware-aws
 ec2_security_group: NekoSecurityGroup
-ec2_image_id: ami-0dba2cb6798deb6d8
-
-ec2_vpc_cidr: 172.36.0.0/16
-ec2_vpc_subnet_cidr: 172.36.15.0/24
-
-route53_hosted_zone_id: ZEQ4Z5PEUXXKY

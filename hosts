@@ -2,4 +2,4 @@
 localhost ansible_connection=local ansible_python_interpreter=python
 
 [neko]
-neko1.hongzai.io
+neko2.hongzai.io
