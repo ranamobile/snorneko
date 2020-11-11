@@ -9,7 +9,7 @@ services:
       - "59000-59100:59000-59100/udp"
     environment:
       DISPLAY: :99.0
-      NEKO_PASSWORD: hongzaiawesome
+      NEKO_PASSWORD: {{ neko_password }}
       NEKO_PASSWORD_ADMIN: admin
       NEKO_BIND: :8080
       NEKO_EPR: 59000-59100

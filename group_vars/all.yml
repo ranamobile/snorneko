@@ -1,8 +1,4 @@
 ---
-main_domain_name: hongzai.io
-neko_domain_name: neko2.hongzai.io
-
-ec2_region: us-east-2
 ec2_instance_type: t3a.large
 ec2_key_name: ariana-alienware-aws
 ec2_security_group: NekoSecurityGroup

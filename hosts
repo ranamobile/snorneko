@@ -1,3 +1,8 @@
+[all:vars]
+main_domain_name=hongzai.io
+neko_domain_name=neko2.hongzai.io
+neko_password=hongzaiawesome
+
 [localhost]
 localhost ansible_connection=local ansible_python_interpreter=python
 
